@@ -1,0 +1,39 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+group = 'org.10ne'
+version = '0.0.x-SNAPSHOT'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile('org.codehaus.groovy:groovy-all:2.2.1')
+    testCompile('org.spockframework:spock-core:0.7-groovy-2.0')
+}
+
+idea {
+    project {
+        jdkName = '1.7'
+        languageLevel = '1.7'
+        wildcards += '?*.gradle;?*.js'
+        ipr {
+            withXml { provider ->
+                def node = provider.asNode()
+                // Use git
+                def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
+                vcsConfig.mapping[0].'@vcs' = 'Git'
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
+    gradleVersion = '1.11'
+}
+
