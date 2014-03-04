@@ -6,15 +6,18 @@ package org._10ne.sgvm
 class Options {
 
     String version
+    boolean offline
     boolean install
 
-    Options(Object[] args) {
-        if (!args || (args.size == 0) || !(args[0] instanceof Map)) {
-            version = 'latest'
+    Options(Object[] methodMissingArgs) {
+        if (!methodMissingArgs || (methodMissingArgs.size == 0) || !(methodMissingArgs[0] instanceof Map)) {
+            version = null
+            offline = false
             install = false
         } else {
-            Map options = args[0]
-            version = (options.version) ?: 'latest'
+            Map options = methodMissingArgs[0]
+            version = (options.version) ?: null
+            offline = options.offline?.toBoolean()
             install = options.install?.toBoolean()
         }
     }
