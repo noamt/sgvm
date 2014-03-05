@@ -8,19 +8,19 @@ SGVM helps you use the GVM in your automated processes without the hassle of cor
 
 === Use
 
-Get the path of the latest locally installed Grails distribution:
+*Get the http://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html[path] of the latest locally installed Grails distribution:*
 [source,groovy]
 ----
 Path latestInstalledGrails = Gvm.use().grails()
 ----
 
-Install and get the path of the latest Grails distribution:
+*Install and get the path of the latest Grails distribution:*
 [source,groovy]
 ----
 Path latestGrails = Gvm.use().grails([install: true])
 ----
 
-Install and get the path of a specific Grails distribution:
+*Install and get the path of a specific Grails distribution:*
 [source,groovy]
 ----
 Path latestGrails = Gvm.use().grails([version: '2.1.4', install: true])
