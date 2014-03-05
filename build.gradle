@@ -1,6 +1,17 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
+    }
+}
+
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: 'artifactory-publish'
 
 group = 'org.10ne'
 version = '0.0.x-SNAPSHOT'
@@ -18,6 +29,39 @@ dependencies {
     testCompile('org.spockframework:spock-core:0.7-groovy-2.0')
     testCompile('cglib:cglib-nodep:3.1')
     testCompile('org.objenesis:objenesis:2.1')
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+jar.dependsOn sourceJar
+
+artifactory {
+    contextUrl = 'https://oss.jfrog.org'
+    resolve {
+        repoKey = 'libs-release'
+    }
+    publish {
+        defaults {
+            publishArtifacts = true
+        }
+    }
+}
+
+publishing {
+    publications {
+        sgvm(MavenPublication) {
+            from components.java
+            artifact sourceJar {
+                classifier 'source'
+            }
+        }
+    }
+}
+
+artifactoryPublish {
+    publications(publishing.publications.sgvm)
 }
 
 idea {
@@ -39,4 +83,3 @@ idea {
 task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
     gradleVersion = '1.11'
 }
-
