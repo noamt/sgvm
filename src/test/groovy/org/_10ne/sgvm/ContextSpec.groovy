@@ -1,5 +1,6 @@
 package org._10ne.sgvm
 
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.nio.file.Files
@@ -12,6 +13,7 @@ import static java.nio.file.Files.isSameFile
  */
 class ContextSpec extends Specification {
 
+    @Ignore
     def 'Construct a new context'() {
         setup:
         def context = Context.get()
