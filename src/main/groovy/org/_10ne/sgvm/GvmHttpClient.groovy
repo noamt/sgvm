@@ -17,7 +17,8 @@ class GvmHttpClient {
     String defaultVersion(String candidateName) {
         String defaultVersion
         try {
-            defaultVersion = httpBuilder.get([path: "candidates/$candidateName/default"])
+            StringReader defaultVersionReader = httpBuilder.get([path: "candidates/$candidateName/default"])
+            defaultVersion = defaultVersionReader.text
         } catch (Throwable t) {
             t.printStackTrace()
             defaultVersion = ''
@@ -28,7 +29,8 @@ class GvmHttpClient {
     boolean validCandidateVersion(String candidateName, String versionName) {
         String validityState
         try {
-            validityState = httpBuilder.get([path: "candidates/$candidateName/$versionName"])
+            StringReader validityStateReader = httpBuilder.get([path: "candidates/$candidateName/$versionName"])
+            validityState = validityStateReader.text
         } catch (Throwable t) {
             t.printStackTrace()
             validityState = 'invalid'
