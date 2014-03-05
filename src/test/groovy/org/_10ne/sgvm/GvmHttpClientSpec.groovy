@@ -25,7 +25,7 @@ class GvmHttpClientSpec extends Specification {
         then:
         1 * httpBuilder.get(_ as Map) >> { Map map ->
             assert map.path == "candidates/candidateName/default"
-            'versionName'
+            new StringReader('versionName')
         }
         defaultVersion == 'versionName'
     }
@@ -61,7 +61,7 @@ class GvmHttpClientSpec extends Specification {
         then:
         1 * httpBuilder.get(_ as Map) >> { Map map ->
             assert map.path == "candidates/candidateName/versionName"
-            expectedResponse
+            new StringReader(expectedResponse)
         }
         versionIsValid == resolvedState
 
