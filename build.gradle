@@ -14,7 +14,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'artifactory-publish'
 
 group = 'org.10ne'
-version = '0.0.1'
+version = '0.0.1.x-SNAPSHOT'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
