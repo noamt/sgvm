@@ -54,7 +54,7 @@ publishing {
         sgvm(MavenPublication) {
             from components.java
             artifact sourceJar {
-                classifier 'source'
+                classifier 'sources'
             }
         }
     }
