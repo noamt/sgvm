@@ -2,68 +2,58 @@ package org._10ne.sgvm
 
 import spock.lang.Specification
 
+import java.nio.file.Paths
+
 /**
  * @author Noam Y. Tenne.
  */
 class UseSpec extends Specification {
 
-    def 'Use a latest candidate'() {
+    def 'Use a candidate with no arguments'() {
         setup:
-        def use = new Use()
+        def context = new Context()
+
+        def use = new Use(context: context)
+
+        def candidates = Mock(Candidates)
+        use.candidates = candidates
+
+        def candidatePath = Paths.get('candidate')
 
         when:
-        Candidate candidate = use."$candidateName"()
+        def returnedPath = use.candidate()
 
         then:
-        candidate.name == candidateName
-        candidate.options.version == 'latest'
-        !candidate.options.install
-
-        where:
-        candidateName << ['gaiden', 'gradle', 'grails', 'griffon', 'groovy', 'groovyserv', 'lazybones', 'springboot', 'vertx']
+        1 * candidates.get(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
+            assert !opts.version
+            assert !opts.offline
+            assert !opts.install
+            candidatePath
+        }
+        returnedPath == candidatePath
     }
 
-    def 'Use a specific candidate'() {
+    def 'Use a candidate with arguments'() {
         setup:
-        def use = new Use()
+        def context = new Context()
+
+        def use = new Use(context: context)
+
+        def candidates = Mock(Candidates)
+        use.candidates = candidates
+
+        def candidatePath = Paths.get('candidate')
 
         when:
-        Candidate candidate = use."$candidateName"(version: '1.6')
+        def returnedPath = use.candidate([version: '1.0', offline: true, install: true])
 
         then:
-        candidate.name == candidateName
-        candidate.options.version == '1.6'
-        !candidate.options.install
-
-        where:
-        candidateName << ['gaiden', 'gradle', 'grails', 'griffon', 'groovy', 'groovyserv', 'lazybones', 'springboot', 'vertx']
-    }
-
-    def 'Use a specific candidate with the option of installing'() {
-        setup:
-        def use = new Use()
-
-        when:
-        Candidate candidate = use."$candidateName"(version: '1.6', install: true)
-
-        then:
-        candidate.name == candidateName
-        candidate.options.version == '1.6'
-        candidate.options.install
-
-        where:
-        candidateName << ['gaiden', 'gradle', 'grails', 'griffon', 'groovy', 'groovyserv', 'lazybones', 'springboot', 'vertx']
-    }
-
-    def 'Use an unknown candidate'() {
-        setup:
-        def use = new Use()
-
-        when:
-        use.jim()
-
-        then:
-        def iae = thrown(IllegalArgumentException)
-        iae.message == 'jim is not a valid candidate.'
+        1 * candidates.get(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
+            assert opts.version == '1.0'
+            assert opts.offline
+            assert opts.install
+            candidatePath
+        }
+        returnedPath == candidatePath
     }
 }
