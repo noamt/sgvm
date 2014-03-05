@@ -1,4 +1,10 @@
-sgvm - Super Groovy enVironment Manager
+Super Groovy enVironment Manager
 ====
 
-A Groovy interface for the GVM
+###An API for the GVM written in Groovy.
+
+SGVM helps you use the GVM in your automated processes without the hassle of interacting with the shell.
+
+##Implemented Methods
+
+### Use

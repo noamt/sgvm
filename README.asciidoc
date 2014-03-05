@@ -1,0 +1,27 @@
+= Super Groovy enVironment Manager
+
+*An API for the GVM written in Groovy.*
+
+SGVM helps you use the GVM in your automated processes without the hassle of correctly setting up and interacting with the shell.
+
+== Implemented Methods
+
+=== Use
+
+Get the path of the latest locally installed Grails distribution:
+[source,groovy]
+----
+Path latestInstalledGrails = Gvm.use().grails()
+----
+
+Install and get the path of the latest Grails distribution:
+[source,groovy]
+----
+Path latestGrails = Gvm.use().grails([install: true])
+----
+
+Install and get the path of a specific Grails distribution:
+[source,groovy]
+----
+Path latestGrails = Gvm.use().grails([version: '2.1.4', install: true])
+----
