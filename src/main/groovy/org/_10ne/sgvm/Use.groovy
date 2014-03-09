@@ -9,6 +9,6 @@ class Use {
 
     def methodMissing(String name, def args) {
         def options = new Options(args)
-        candidates.get(context, name, options)
+        candidates.use(context, name, options)
     }
 }

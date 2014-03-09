@@ -24,7 +24,7 @@ class UseSpec extends Specification {
         def returnedPath = use.candidate()
 
         then:
-        1 * candidates.get(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
+        1 * candidates.use(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
             assert !opts.version
             assert !opts.offline
             assert !opts.install
@@ -48,7 +48,7 @@ class UseSpec extends Specification {
         def returnedPath = use.candidate([version: '1.0', offline: true, install: true])
 
         then:
-        1 * candidates.get(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
+        1 * candidates.use(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
             assert opts.version == '1.0'
             assert opts.offline
             assert opts.install

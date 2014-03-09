@@ -14,7 +14,25 @@ class Candidates {
     CandidateVersions candidateVersions = new CandidateVersions()
     CandidateInstaller candidateInstaller = new CandidateInstaller()
 
-    Path get(Context context, String name, Options options) {
+    Path use(Context context, String name, Options options) {
+        validateCandidate(name)
+        def candidateDir = context.candidateDir(name)
+
+        def version = candidateVersions.determine(context, candidateDir, options)
+        def versionDir = context.candidateVersionDir(candidateDir, version)
+
+        if (Files.exists(versionDir)) {
+            versionDir
+        } else {
+            if (options.install) {
+                candidateInstaller.installCandidateVersion(context, name, version)
+            } else {
+                throw new Exception("$name $version is not installed")
+            }
+        }
+    }
+
+    Path install(Context context, String name, Options options) {
         validateCandidate(name)
         def candidateDir = context.candidateDir(name)
 
@@ -23,18 +41,15 @@ class Candidates {
 
         if (Files.exists(versionDir)) {
             return versionDir
-        } else {
-            if (options.install) {
-                def archive = context.candidateArchive(name, version)
-                if (!Files.exists(archive)) {
-                    Files.createDirectories(context.archives())
-                    archive = context.service.downloadCandidate(context, name, version)
-                }
-                return candidateInstaller.installCandidateVersion(context, name, version, archive)
-            } else {
-                throw new Exception("$name $version is not installed")
-            }
         }
+
+        versionDir = candidateInstaller.installCandidateVersion(context, name, version)
+        if (options.defaultVersion) {
+            def currentVersion = context.candidateCurrentVersion(candidateDir)
+            Files.deleteIfExists(currentVersion)
+            return Files.createSymbolicLink(currentVersion, versionDir)
+        }
+        versionDir
     }
 
     private void validateCandidate(String name) {
@@ -42,4 +57,5 @@ class Candidates {
             throw new IllegalArgumentException("$name is not a valid candidate.");
         }
     }
+
 }
