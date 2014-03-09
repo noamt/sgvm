@@ -37,6 +37,8 @@ class ContextSpec extends Specification {
         isSameFile(context.candidateDir('candidateName'), gvmHomeDir.resolve('candidateName'))
         isSameFile(context.candidateVersionDir(context.candidateDir('candidateName'), 'candidateVersion'),
                 gvmHomeDir.resolve('candidateName').resolve('candidateVersion'))
+        isSameFile(context.candidateCurrentVersion(context.candidateDir('candidateName')),
+                gvmHomeDir.resolve('candidateName').resolve('current'))
     }
 
     def 'Resolve GVM current candidate version directory'() {

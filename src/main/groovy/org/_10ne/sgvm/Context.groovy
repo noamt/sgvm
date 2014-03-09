@@ -60,7 +60,11 @@ class Context {
     }
 
     Path candidateResolveCurrentDir(Path candidateDir) {
-        Files.readSymbolicLink(candidateVersionDir(candidateDir, 'current'))
+        Files.readSymbolicLink(candidateCurrentVersion(candidateDir))
+    }
+
+    Path candidateCurrentVersion(Path candidateDir) {
+        candidateVersionDir(candidateDir, 'current')
     }
 
     Path candidateArchive(String candidateName, String versionName) {
