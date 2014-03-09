@@ -15,15 +15,17 @@ class OptionsSpec extends Specification {
         !options.install
         !options.offline
         !options.version
+        !options.defaultVersion
     }
 
     def 'Construct options'() {
         setup:
-        def options = new Options([[install: true, offline: true, version: '1.0']] as Object[])
+        def options = new Options([[install: true, offline: true, version: '1.0', 'default': true]] as Object[])
 
         expect:
         options.install
         options.offline
         options.version == '1.0'
+        options.defaultVersion
     }
 }
