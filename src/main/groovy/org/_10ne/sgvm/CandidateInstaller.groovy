@@ -11,9 +11,15 @@ import java.util.zip.ZipInputStream
  */
 class CandidateInstaller {
 
-    Path installCandidateVersion(Context context, String name, String version, Path candidateArchive) {
+    Path installCandidateVersion(Context context, String name, String version) {
+        def archive = context.candidateArchive(name, version)
+        if (!Files.exists(archive)) {
+            Files.createDirectories(context.archives())
+            archive = context.service.downloadCandidate(context, name, version)
+        }
+
         def tempDir = context.tmp()
-        candidateArchive.toFile().withInputStream {
+        archive.toFile().withInputStream {
             def zipIn = new ZipInputStream(it)
             ZipEntry entry
             while ((entry = zipIn.nextEntry) != null) {
