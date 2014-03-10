@@ -6,7 +6,7 @@ SGVM helps you use the http://gvmtool.net[aweseome GVM] in your automated proces
 
 == Distribution
 
-SGVM is currently at version 0.0.1 and is distrbuted via https://bintray.com/noamt/java-libraries/sgvm/view[Bintray].
+SGVM is currently at version 0.0.1.2 and is distrbuted via https://bintray.com/noamt/java-libraries/sgvm/view[Bintray].
 
 == Implemented Methods
 
