@@ -15,17 +15,17 @@ SGVM is currently at version 0.0.1 and is distrbuted via https://bintray.com/noa
 *Get the http://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html[path] of the latest locally installed Grails distribution:*
 [source,groovy]
 ----
-Path latestInstalledGrails = Gvm.use().grails()
+Path latestInstalledGrails = Gvm.use.grails()
 ----
 
 *Install and get the path of the latest Grails distribution:*
 [source,groovy]
 ----
-Path latestGrails = Gvm.use().grails([install: true])
+Path latestGrails = Gvm.use.grails([install: true])
 ----
 
 *Install and get the path of a specific Grails distribution:*
 [source,groovy]
 ----
-Path latestGrails = Gvm.use().grails([version: '2.1.4', install: true])
+Path grails = Gvm.use.grails([version: '2.1.4', install: true])
 ----
