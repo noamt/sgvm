@@ -5,6 +5,26 @@ package org._10ne.sgvm
 class Gvm {
 
     public static Use use() {
+        constructUse()
+    }
+
+    public static Use getUse() {
+        constructUse()
+    }
+
+    public static Install install() {
+        constructInstall()
+    }
+
+    public static Install getInstall() {
+        constructInstall()
+    }
+
+    private static Use constructUse() {
         new Use(context: Context.get())
+    }
+
+    private static Install constructInstall() {
+        new Install(context: Context.get())
     }
 }
