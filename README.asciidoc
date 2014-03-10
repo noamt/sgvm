@@ -18,14 +18,38 @@ SGVM is currently at version 0.0.1 and is distrbuted via https://bintray.com/noa
 Path latestInstalledGrails = Gvm.use.grails()
 ----
 
-*Install and get the path of the latest Grails distribution:*
+*Install and get the http://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html[path] of the latest Grails distribution:*
 [source,groovy]
 ----
 Path latestGrails = Gvm.use.grails([install: true])
 ----
 
-*Install and get the path of a specific Grails distribution:*
+*Install and get the http://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html[path] of a specific Grails distribution:*
 [source,groovy]
 ----
 Path grails = Gvm.use.grails([version: '2.1.4', install: true])
 ----
+
+=== Install
+
+*Install and get the http://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html[path] of the latest Grails distribution:*
+[source,groovy]
+----
+Path latestGrails = Gvm.install.grails()
+----
+
+*Install and get the http://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html[path] of the latest Grails distribution and set it as the default version:*
+[source,groovy]
+----
+Path latestGrails = Gvm.install.grails([default: true])
+----
+
+*Install and get the http://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html[path] of a specific Grails distribution:*
+[source,groovy]
+----
+Path grails = Gvm.install.grails([version: '2.1.4'])
+----
+
+=== Other supported options
+
+* offline - +false+ by default. Set +true+ in order to work without the remote GVM service. 
