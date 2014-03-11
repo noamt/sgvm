@@ -26,13 +26,17 @@ class CandidateInstaller {
                 if (!entry.directory) {
                     def entryPath = tempDir.resolve(entry.name)
                     Files.createDirectories(entryPath.parent)
-                    entryPath.toFile().withOutputStream {
-                        int len = 0;
+                    def entryFile = entryPath.toFile()
+                    entryFile.withOutputStream {
+                        int len = 0
                         byte[] buffer = new byte[4096]
                         while ((len = zipIn.read(buffer)) > 0) {
-                            it.write(buffer, 0, len);
+                            it.write(buffer, 0, len)
                         }
                     }
+                    entryFile.setExecutable(true, true)
+                    entryFile.setReadable(true, true)
+                    entryFile.setWritable(true, true)
                 }
             }
         }

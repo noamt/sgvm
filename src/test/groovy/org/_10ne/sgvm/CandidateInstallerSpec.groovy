@@ -72,6 +72,11 @@ class CandidateInstallerSpec extends Specification {
         }
 
         contextTemp.toFile().list().size() == 0
-        Files.exists(installedDistro.resolve('dummy.file'))
+
+        def extractedPath = installedDistro.resolve('dummy.file')
+        Files.exists(extractedPath)
+        Files.isWritable(extractedPath)
+        Files.isReadable(extractedPath)
+        Files.isExecutable(extractedPath)
     }
 }
