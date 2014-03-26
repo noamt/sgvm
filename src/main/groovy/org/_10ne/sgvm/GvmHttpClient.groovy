@@ -1,8 +1,7 @@
 package org._10ne.sgvm
 
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.HttpResponseDecorator
-import org.apache.commons.lang.BooleanUtils
+import net.gvmtool.client.GvmClient
+import net.gvmtool.client.GvmClientException
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -12,42 +11,37 @@ import java.nio.file.Path
  */
 class GvmHttpClient {
 
-    HTTPBuilder httpBuilder = new HTTPBuilder('http://api.gvmtool.net/')
+    GvmClient client = GvmClient.instance()
 
     String defaultVersion(String candidateName) {
-        String defaultVersion
         try {
-            StringReader defaultVersionReader = httpBuilder.get([path: "candidates/$candidateName/default"])
-            defaultVersion = defaultVersionReader.text
-        } catch (Throwable t) {
-            t.printStackTrace()
-            defaultVersion = ''
+            client.getDefaultVersionFor(candidateName).name
+        } catch (GvmClientException gce) {
+            gce.printStackTrace()
+            ''
         }
-        defaultVersion
     }
 
     boolean validCandidateVersion(String candidateName, String versionName) {
-        String validityState
         try {
-            StringReader validityStateReader = httpBuilder.get([path: "candidates/$candidateName/$versionName"])
-            validityState = validityStateReader.text
-        } catch (Throwable t) {
-            t.printStackTrace()
-            validityState = 'invalid'
+            client.validCandidateVersion(candidateName, versionName)
+        } catch (GvmClientException gce) {
+            gce.printStackTrace()
+            false
         }
-        BooleanUtils.toBoolean(validityState, 'valid', 'invalid')
     }
 
     Path downloadCandidate(Context context, String candidateName, String versionName) {
-        httpBuilder.get([path: "download/$candidateName/$versionName", query: [platform: 'Linux']]) { HttpResponseDecorator resp ->
-            def candidateArchive = context.candidateArchive(candidateName, versionName)
-            Files.createFile(candidateArchive)
-            candidateArchive.toFile().withOutputStream {
-                it
-                resp.entity.writeTo(it)
-            }
+        def downloadUrl = client.getDownloadURL(candidateName, versionName)
 
-            candidateArchive
+        def candidateArchive = context.candidateArchive(candidateName, versionName)
+        Files.createFile(candidateArchive)
+        candidateArchive.toFile().withOutputStream { OutputStream output ->
+            downloadUrl.withInputStream { InputStream input ->
+                output << input
+            }
         }
+
+        candidateArchive
     }
 }

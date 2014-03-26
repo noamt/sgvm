@@ -1,11 +1,12 @@
 package org._10ne.sgvm
 
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.HttpResponseDecorator
-import org.apache.http.HttpEntity
+import net.gvmtool.client.GvmClient
+import net.gvmtool.client.GvmClientException
+import net.gvmtool.client.Version
 import spock.lang.Specification
 
 import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * @author Noam Y. Tenne.
@@ -14,109 +15,86 @@ class GvmHttpClientSpec extends Specification {
 
     def 'Resolve the default version of a candidate'() {
         setup:
-        def httpBuilder = Mock(HTTPBuilder)
+        def gvmClient = GroovyMock(GvmClient, global: true)
 
         def gvmHttpClient = new GvmHttpClient()
-        gvmHttpClient.httpBuilder = httpBuilder
+        gvmHttpClient.client = gvmClient
 
         when:
         def defaultVersion = gvmHttpClient.defaultVersion('candidateName')
 
         then:
-        1 * httpBuilder.get(_ as Map) >> { Map map ->
-            assert map.path == "candidates/candidateName/default"
-            new StringReader('versionName')
-        }
+        1 * gvmClient.getDefaultVersionFor('candidateName') >> { new Version(name: 'versionName') }
         defaultVersion == 'versionName'
     }
 
     def 'Resolve the default version of a candidate and encounter an exception'() {
         setup:
-        def httpBuilder = Mock(HTTPBuilder)
+        def gvmClient = GroovyMock(GvmClient, global: true)
 
         def gvmHttpClient = new GvmHttpClient()
-        gvmHttpClient.httpBuilder = httpBuilder
+        gvmHttpClient.client = gvmClient
 
         when:
         def defaultVersion = gvmHttpClient.defaultVersion('candidateName')
 
         then:
-        1 * httpBuilder.get(_ as Map) >> { Map map ->
-            assert map.path == "candidates/candidateName/default"
-            throw new Exception('error')
-        }
+        1 * gvmClient.getDefaultVersionFor('candidateName') >> { throw new GvmClientException('') }
         defaultVersion == ''
     }
 
     def 'Validate a candidate version'() {
         setup:
-        def httpBuilder = Mock(HTTPBuilder)
+        def gvmClient = GroovyMock(GvmClient, global: true)
 
         def gvmHttpClient = new GvmHttpClient()
-        gvmHttpClient.httpBuilder = httpBuilder
+        gvmHttpClient.client = gvmClient
 
         when:
         def versionIsValid = gvmHttpClient.validCandidateVersion('candidateName', 'versionName')
 
         then:
-        1 * httpBuilder.get(_ as Map) >> { Map map ->
-            assert map.path == "candidates/candidateName/versionName"
-            new StringReader(expectedResponse)
-        }
-        versionIsValid == resolvedState
+        1 * gvmClient.validCandidateVersion('candidateName', 'versionName') >> { response }
+        versionIsValid == response
 
         where:
-        expectedResponse | resolvedState
-        'valid'          | true
-        'invalid'        | false
+        response << [true, false]
     }
 
     def 'Validate a candidate version and encounter an exception'() {
         setup:
-        def httpBuilder = Mock(HTTPBuilder)
+        def gvmClient = GroovyMock(GvmClient, global: true)
 
         def gvmHttpClient = new GvmHttpClient()
-        gvmHttpClient.httpBuilder = httpBuilder
+        gvmHttpClient.client = gvmClient
 
         when:
         def versionIsValid = gvmHttpClient.validCandidateVersion('candidateName', 'versionName')
 
         then:
-        1 * httpBuilder.get(_ as Map) >> { Map map ->
-            assert map.path == "candidates/candidateName/versionName"
-            throw new Exception('error')
-        }
+        1 * gvmClient.validCandidateVersion('candidateName', 'versionName') >> { throw new GvmClientException('') }
         !versionIsValid
     }
 
     def 'Download a candidate distribution'() {
         setup:
-        def httpBuilder = Mock(HTTPBuilder)
+        def gvmClient = GroovyMock(GvmClient, global: true)
 
         def gvmHttpClient = new GvmHttpClient()
-        gvmHttpClient.httpBuilder = httpBuilder
+        gvmHttpClient.client = gvmClient
 
         def context = Mock(Context)
 
-        def httpEntity = Mock(HttpEntity)
-        def responseDecorator = Mock(HttpResponseDecorator) {
-            1 * getEntity() >> { httpEntity }
-        }
+        Path tempFile = Files.createTempFile('some', 'file')
+        tempFile.toFile() << 'jim'
 
         when:
         def archivePath = gvmHttpClient.downloadCandidate(context, 'candidateName', 'versionName')
 
         then:
-        1 * httpBuilder.get(_ as Map, _ as Closure) >> { Map map, Closure closure ->
-            assert map.path == "download/candidateName/versionName"
-            assert map.query == [platform: 'Linux']
-            closure.call(responseDecorator)
-        }
+        1 * gvmClient.getDownloadURL('candidateName', 'versionName') >> { tempFile.toUri().toURL() }
         1 * context.candidateArchive('candidateName', 'versionName') >> {
             Files.createTempDirectory('test').resolve('file')
-        }
-        1 * httpEntity.writeTo(_ as OutputStream) >> { OutputStream out ->
-            out << 'jim'
         }
         archivePath.toFile().text == 'jim'
     }
