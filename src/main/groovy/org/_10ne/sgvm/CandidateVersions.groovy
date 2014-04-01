@@ -7,44 +7,49 @@ import java.nio.file.Path
  */
 class CandidateVersions {
 
-    String determine(Context context, Path candidateDir, Options options) {
+    CandidateVersion determine(Context context, Path candidateDir, Options options) {
         String candidateName = candidateDir.fileName.toString()
         def versionName = options.version
 
         if (options.offline) {
             if (versionName) {
                 if (context.candidateVersionInstalled(candidateDir, versionName)) {
-                    return versionName
+                    return version(context, candidateDir, versionName)
                 } else {
                     throw new Exception('Not available offline')
                 }
             } else {
                 if (context.candidateHasCurrentVersion(candidateDir)) {
                     def resolvedCurrentDir = context.candidateResolveCurrentDir(candidateDir)
-                    return resolvedCurrentDir.fileName
+                    return version(context, candidateDir, resolvedCurrentDir.fileName.toString())
                 } else {
                     throw new Exception('Not available offline')
                 }
             }
         } else {
             if (!versionName) {
-                return context.service.defaultVersion(candidateName)
+                return version(context, candidateDir, context.service.defaultVersion(candidateName))
             } else {
                 boolean versionValid = context.service.validCandidateVersion(candidateName, versionName)
                 if (versionValid) {
-                    return versionName
+                    return version(context, candidateDir, versionName)
                 }
 
                 if (context.candidateVersionIsSymlink(candidateDir, versionName)) {
-                    return versionName
+                    return version(context, candidateDir, versionName)
                 }
 
                 if (context.candidateVersionIsDir(candidateDir, versionName)) {
-                    return versionName
+                    return version(context, candidateDir, versionName)
                 }
 
                 throw new Exception("$versionName is not a valid $candidateName version.")
             }
         }
+    }
+
+    private CandidateVersion version(Context context, Path candidateDir, String name) {
+        def candidateVersionDir = context.candidateVersionDir(candidateDir, name)
+        new CandidateVersion(name: name, dir: candidateVersionDir)
     }
 }

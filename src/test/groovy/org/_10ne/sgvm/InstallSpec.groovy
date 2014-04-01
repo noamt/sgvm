@@ -2,60 +2,75 @@ package org._10ne.sgvm
 
 import spock.lang.Specification
 
-import java.nio.file.Paths
+import java.nio.file.Files
 
 /**
  * @author Noam Y. Tenne.
  */
 class InstallSpec extends Specification {
 
-    def 'Install a candidate with no arguments'() {
+    def 'Install an existing version'() {
         setup:
-        def context = new Context()
-
-        def install = new Install(context: context)
-
+        def context = Mock(Context)
         def candidates = Mock(Candidates)
-        install.candidates = candidates
+        def candidateVersions = Mock(CandidateVersions)
 
-        def candidatePath = Paths.get('candidate')
+        def candidateDir = Files.createTempDirectory('candidate')
+        def candidateVersionDir = Files.createTempDirectory(candidateDir, '1.0')
+
+        def install = new Install(context: context, candidates: candidates, candidateVersions: candidateVersions)
 
         when:
-        def returnedPath = install.candidate()
+        def versionDir = install.methodMissing('candidate', null)
 
         then:
-        1 * candidates.install(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
-            assert !opts.version
-            assert !opts.offline
-            assert !opts.install
-            assert !opts.defaultVersion
-            candidatePath
-        }
-        returnedPath == candidatePath
+        1 * candidates.get(context, 'candidate') >> candidateDir
+        1 * candidateVersions.determine(context, candidateDir, _ as Options) >> new CandidateVersion(name: '1.0', dir: candidateVersionDir)
+        versionDir == candidateVersionDir
     }
 
-    def 'Install a candidate with arguments'() {
+    def 'Install a non-existing version'() {
         setup:
-        def context = new Context()
-
-        def install = new Install(context: context)
-
+        def context = Mock(Context)
         def candidates = Mock(Candidates)
-        install.candidates = candidates
+        def candidateVersions = Mock(CandidateVersions)
+        def candidateInstaller = Mock(CandidateInstaller)
 
-        def candidatePath = Paths.get('candidate')
+        def candidateDir = Files.createTempDirectory('candidate')
+        def candidateVersionDir = Files.createTempDirectory(candidateDir, '1.0')
+
+        def install = new Install(context: context, candidates: candidates, candidateVersions: candidateVersions, candidateInstaller: candidateInstaller)
 
         when:
-        def returnedPath = install.candidate([version: '1.0', offline: true, install: true, default: true])
+        def versionDir = install.methodMissing('candidate', null)
 
         then:
-        1 * candidates.install(context, 'candidate', _ as Options) >> { Context ctx, String candidateName, Options opts ->
-            assert opts.version == '1.0'
-            assert opts.offline
-            assert opts.install
-            assert opts.defaultVersion
-            candidatePath
-        }
-        returnedPath == candidatePath
+        1 * candidates.get(context, 'candidate') >> candidateDir
+        1 * candidateVersions.determine(context, candidateDir, _ as Options) >> new CandidateVersion(name: '1.0', dir: candidateDir.resolve('momo'))
+        1 * candidateInstaller.installCandidateVersion(context, 'candidate', '1.0') >> candidateVersionDir
+        versionDir == candidateVersionDir
+    }
+
+    def 'Install a non-existing version and set as default'() {
+        setup:
+        def context = Mock(Context)
+        def candidates = Mock(Candidates)
+        def candidateVersions = Mock(CandidateVersions)
+        def candidateInstaller = Mock(CandidateInstaller)
+
+        def candidateDir = Files.createTempDirectory('candidate')
+        def candidateVersionDir = Files.createTempDirectory(candidateDir, '1.0')
+
+        def install = new Install(context: context, candidates: candidates, candidateVersions: candidateVersions, candidateInstaller: candidateInstaller)
+
+        when:
+        def versionDir = install.methodMissing('candidate', [[default: true]] as Object[])
+
+        then:
+        1 * candidates.get(context, 'candidate') >> candidateDir
+        1 * candidateVersions.determine(context, candidateDir, _ as Options) >> new CandidateVersion(name: '1.0', dir: candidateDir.resolve('momo'))
+        1 * candidateInstaller.installCandidateVersion(context, 'candidate', '1.0') >> candidateVersionDir
+        1 * context.candidateCurrentVersion(candidateDir) >> candidateDir.resolve('current')
+        versionDir == candidateDir.resolve('current')
     }
 }

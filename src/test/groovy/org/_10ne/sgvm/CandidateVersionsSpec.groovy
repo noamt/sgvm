@@ -22,7 +22,9 @@ class CandidateVersionsSpec extends Specification {
 
         then:
         1 * context.candidateVersionInstalled(candidateDir, '1.0') >> { true }
-        determinedVersion == '1.0'
+        1 * context.candidateVersionDir(candidateDir, '1.0') >> { candidateDir.resolve('1.0') }
+        determinedVersion.name == '1.0'
+        determinedVersion.dir == candidateDir.resolve('1.0')
     }
 
     def 'Determine a current version while in offline mode'() {
@@ -40,7 +42,9 @@ class CandidateVersionsSpec extends Specification {
         then:
         1 * context.candidateHasCurrentVersion(candidateDir) >> { true }
         1 * context.candidateResolveCurrentDir(candidateDir) >> { installedVersionDir }
-        determinedVersion == '1.0'
+        1 * context.candidateVersionDir(candidateDir, '1.0') >> { candidateDir.resolve('1.0') }
+        determinedVersion.name == '1.0'
+        determinedVersion.dir == installedVersionDir
     }
 
     def 'Determine a provided version that\'s not installed while in offline mode'() {
@@ -90,7 +94,9 @@ class CandidateVersionsSpec extends Specification {
 
         then:
         1 * gvmService.defaultVersion(candidateDir.fileName.toString()) >> { '1.0' }
-        determinedVersion == '1.0'
+        1 * context.candidateVersionDir(candidateDir, '1.0') >> { candidateDir.resolve('1.0') }
+        determinedVersion.name == '1.0'
+        determinedVersion.dir == candidateDir.resolve('1.0')
     }
 
     def 'Validate a provided candidate version name'() {
@@ -110,7 +116,9 @@ class CandidateVersionsSpec extends Specification {
 
         then:
         1 * gvmService.validCandidateVersion(candidateDir.fileName.toString(), '1.0') >> { true }
-        determinedVersion == '1.0'
+        1 * context.candidateVersionDir(candidateDir, '1.0') >> { candidateDir.resolve('1.0') }
+        determinedVersion.name == '1.0'
+        determinedVersion.dir == candidateDir.resolve('1.0')
     }
 
     def 'Validate a symlinked provided candidate version name'() {
@@ -131,7 +139,9 @@ class CandidateVersionsSpec extends Specification {
         then:
         1 * gvmService.validCandidateVersion(candidateDir.fileName.toString(), '1.0') >> { false }
         1 * context.candidateVersionIsSymlink(candidateDir, '1.0') >> { true }
-        determinedVersion == '1.0'
+        1 * context.candidateVersionDir(candidateDir, '1.0') >> { candidateDir.resolve('1.0') }
+        determinedVersion.name == '1.0'
+        determinedVersion.dir == candidateDir.resolve('1.0')
     }
 
     def 'Validate an installed provided candidate version name'() {
@@ -153,7 +163,9 @@ class CandidateVersionsSpec extends Specification {
         1 * gvmService.validCandidateVersion(candidateDir.fileName.toString(), '1.0') >> { false }
         1 * context.candidateVersionIsSymlink(candidateDir, '1.0') >> { false }
         1 * context.candidateVersionIsDir(candidateDir, '1.0') >> { true }
-        determinedVersion == '1.0'
+        1 * context.candidateVersionDir(candidateDir, '1.0') >> { candidateDir.resolve('1.0') }
+        determinedVersion.name == '1.0'
+        determinedVersion.dir == candidateDir.resolve('1.0')
     }
 
     def 'Validate an invalid provided candidate version name'() {
