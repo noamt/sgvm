@@ -20,4 +20,9 @@ class GvmSpec extends Specification {
         expect:
         Gvm.install.grails(version: '2.1.4') == Paths.get(System.properties['user.home'], '.gvm', 'grails', '2.1.4')
     }
+
+    def 'Uninstall'() {
+        expect:
+        Gvm.uninstall.grails(version: '2.1.5')
+    }
 }

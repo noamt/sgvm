@@ -20,11 +20,23 @@ class Gvm {
         constructInstall()
     }
 
+    public static Uninstall uninstall() {
+        constructUninstall()
+    }
+
+    public static Uninstall getUninstall() {
+        constructUninstall()
+    }
+
     private static Use constructUse() {
         new Use(context: Context.get())
     }
 
     private static Install constructInstall() {
         new Install(context: Context.get())
+    }
+
+    private static Uninstall constructUninstall() {
+        new Uninstall(context: Context.get())
     }
 }
