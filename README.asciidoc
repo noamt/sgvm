@@ -51,6 +51,14 @@ Path latestGrails = Gvm.install.grails([default: true])
 Path grails = Gvm.install.grails([version: '2.1.4'])
 ----
 
+=== Uninstall
+
+*Uninstall a Grails distribution:*
+[source,groovy]
+----
+Gvm.uninstall.grails([version: '2.1.4'])
+----
+
 === Other supported options
 
 * offline - +false+ by default. Set +true+ in order to work without the remote GVM service. 
