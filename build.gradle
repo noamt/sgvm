@@ -81,5 +81,5 @@ idea {
 }
 
 task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
-    gradleVersion = '1.11'
+    gradleVersion = '1.12'
 }
