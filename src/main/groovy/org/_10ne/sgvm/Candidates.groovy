@@ -7,8 +7,8 @@ import java.nio.file.Path
  */
 class Candidates {
 
-    static Set<String> KNOWN_CANDIDATES = ['gaiden', 'gradle', 'grails', 'griffon', 'groovy', 'groovyserv', 'lazybones',
-                                           'springboot', 'vertx'] as Set
+    static Set<String> KNOWN_CANDIDATES = ['gaiden', 'glide', 'gradle', 'grails', 'griffon', 'groovy', 'groovyserv',
+                                           'lazybones', 'springboot', 'vertx'] as Set
 
     Path get(Context context, String name) {
         validateCandidate(name)
